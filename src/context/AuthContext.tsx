@@ -41,8 +41,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
+    // Set axios base URL for API calls
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+    axios.defaults.baseURL = backendUrl;
+
     // Initialize Socket.IO connection
-    const socketConnection = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000', {
+    const socketConnection = io(backendUrl, {
       transports: ['websocket', 'polling'],
       upgrade: true,
     });

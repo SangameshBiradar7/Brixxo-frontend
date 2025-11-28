@@ -142,7 +142,8 @@ function ProfessionalsPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/professionals', {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(`${backendUrl}/api/professionals`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
