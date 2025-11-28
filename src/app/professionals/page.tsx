@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -78,7 +78,15 @@ function CompanyCardSkeleton() {
   );
 }
 
-export default function ProfessionalsPage() {
+export default function ProfessionalsPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfessionalsPage />
+    </Suspense>
+  );
+}
+
+function ProfessionalsPage() {
   const { user, socket } = useAuth();
   const searchParams = useSearchParams();
   const [professionals, setProfessionals] = useState<Professional[]>([]);

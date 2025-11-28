@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -21,7 +21,7 @@ const professionalSignupSchema = yup.object({
   terms: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-export default function ProfessionalSignupPage() {
+function ProfessionalSignupPage() {
   const { register: registerUser } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -366,5 +366,13 @@ export default function ProfessionalSignupPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProfessionalSignupPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfessionalSignupPage />
+    </Suspense>
   );
 }
