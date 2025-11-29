@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 
 interface User {
@@ -41,9 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    // Set axios base URL for API calls
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-    axios.defaults.baseURL = backendUrl;
 
     // Initialize Socket.IO connection
     const socketConnection = io(backendUrl, {
@@ -76,31 +73,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const token = localStorage.getItem('token');
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Fetch user profile with timeout and retry logic
       const fetchUserProfile = async (retries = 3) => {
         try {
-          const response = await axios.get('/api/users/profile', {
-            timeout: 10000, // 10 second timeout
+          const response = await fetch(`${backendUrl}/api/users/profile`, {
+            method: 'GET',
             headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
               'Cache-Control': 'no-cache'
             }
           });
-          setUser(response.data);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          setUser(data);
 
           // Join user's personal room for notifications
-          if (response.data._id) {
-            socketConnection.emit('join', response.data._id);
+          if (data._id) {
+            socketConnection.emit('join', data._id);
           }
         } catch (err: any) {
           console.error('Failed to fetch user profile:', err);
-          if (retries > 0 && err.code !== 'NETWORK_ERROR') {
-            // Retry after a delay
+          if (retries > 0 && !err.message.includes('401') && !err.message.includes('403')) {
+            // Retry after a delay for non-auth errors
             setTimeout(() => fetchUserProfile(retries - 1), 2000);
           } else {
             // Clear invalid token
             localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
           }
         } finally {
           setLoading(false);
@@ -120,44 +123,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<User> => {
     try {
-      const res = await axios.post('/auth/login', { email, password }, {
-        timeout: 10000,
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const res = await fetch(`${backendUrl}/auth/login`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ email, password })
       });
-      const { token, user } = res.data;
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
+
+      const { token, user } = await res.json();
       localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
       return user;
     } catch (error: any) {
       console.error('Login error:', error);
-      throw new Error(error.response?.data?.message || 'Login failed');
+      throw new Error(error.message || 'Login failed');
     }
   };
 
   const register = async (name: string, email: string, password: string, role: string) => {
     try {
-      const res = await axios.post('/auth/register', { name, email, password, role }, {
-        timeout: 10000,
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const res = await fetch(`${backendUrl}/auth/register`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ name, email, password, role })
       });
-      const { token, user } = res.data;
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
+
+      const { token, user } = await res.json();
       localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
     } catch (error: any) {
       console.error('Registration error:', error);
-      throw new Error(error.response?.data?.message || 'Registration failed');
+      throw new Error(error.message || 'Registration failed');
     }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };
 
