@@ -7,18 +7,19 @@ const nextConfig: NextConfig = {
 
   // API rewrites
   async rewrites() {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
     return [
       {
         source: '/auth/:path*',
-        destination: process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/auth/:path*` : 'http://localhost:5000/auth/:path*',
+        destination: `${backendUrl}/auth/:path*`,
       },
       {
         source: '/api/:path*',
-        destination: process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/:path*` : 'http://localhost:5000/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
       },
       {
         source: '/uploads/:path*',
-        destination: process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/uploads/:path*` : 'http://localhost:5000/uploads/:path*',
+        destination: `${backendUrl}/uploads/:path*`,
       },
     ];
   },

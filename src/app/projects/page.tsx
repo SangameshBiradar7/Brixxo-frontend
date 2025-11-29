@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/Navigation';
+import { api } from '@/lib/api';
 
 // Interface for project data from backend API
 interface Project {
@@ -64,20 +65,7 @@ export default function ProjectsPage() {
       setError(null);
 
       // Fetch projects from backend API
-      const response = await fetch('/api/projects', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Check if response is successful
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await api.get('/api/projects');
       console.log('✅ ProjectsPage: Received projects data:', data);
 
       // Validate and set project data

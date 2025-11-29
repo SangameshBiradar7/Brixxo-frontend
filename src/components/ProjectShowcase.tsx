@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { api } from '@/lib/api';
 
 interface Project {
   _id: string;
@@ -30,18 +31,7 @@ export default function ProjectShowcase() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/projects/search?limit=6&sortBy=newest', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await api.get('/api/projects/search?limit=6&sortBy=newest');
       console.log('✅ ProjectShowcase: Received projects data:', data);
 
       setProjects(data.projects || []);
