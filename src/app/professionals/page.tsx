@@ -674,13 +674,10 @@ function ProfessionalsPage() {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-4 font-poppins">
-                    {activeCategory !== 'All' ? `No ${activeCategory} Found` : 'No Professionals Found'}
+                    Coming Soon
                   </h3>
                   <p className="text-slate-600 mb-8 max-w-lg mx-auto text-lg leading-relaxed">
-                    {activeCategory !== 'All'
-                      ? `We're currently onboarding qualified ${activeCategory.toLowerCase()}. Check back soon or explore our other professional categories.`
-                      : 'We\'re working to bring exceptional talent to our platform. Check back soon!'
-                    }
+                    We're working to bring exceptional construction professionals to our platform. Check back soon to connect with verified experts!
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     {activeCategory !== 'All' && (
