@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
 import {
    Home,
    Wrench,
@@ -164,17 +163,22 @@ export default function SubmitRequirementPage() {
         submitData.append(`attachments`, file);
       });
 
-      await axios.post('/api/requirements', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const res = await fetch(`${backendUrl}/api/requirements`, {
+        method: 'POST',
+        body: submitData
       });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+      }
 
       alert('Your requirement has been submitted successfully! Companies will start sending quotes soon.');
       router.push('/dashboard/requirements');
     } catch (error: any) {
       console.error('Error submitting requirement:', error);
-      alert(error.response?.data?.message || 'Failed to submit requirement. Please try again.');
+      alert(error.message || 'Failed to submit requirement. Please try again.');
     } finally {
       setLoading(false);
     }
