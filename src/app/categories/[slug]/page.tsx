@@ -76,7 +76,7 @@ const professionals = [
     experience: '12+ years',
     rating: 4.8,
     projects: 67,
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     verified: true
   },
   {

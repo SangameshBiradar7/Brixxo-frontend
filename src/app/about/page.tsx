@@ -11,7 +11,7 @@ const testimonials = [
     name: "Sarah Johnson",
     role: "Homeowner",
     rating: 5,
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop&crop=face'
+    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face'
   },
   {
     id: 2,

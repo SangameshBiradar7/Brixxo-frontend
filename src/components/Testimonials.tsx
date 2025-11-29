@@ -6,7 +6,7 @@ const testimonials = [
     quote: "BRIXXO helped us find the perfect contractor for our home renovation. The process was seamless and the results exceeded our expectations!",
     name: "Anjali Sharma",
     projectImage: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop&crop=center",
-    userImage: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop&crop=face"
+    userImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face"
   },
   {
     id: 2,
