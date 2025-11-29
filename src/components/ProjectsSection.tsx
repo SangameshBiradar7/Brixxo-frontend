@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import { api } from '@/lib/api';
 
 interface Project {
   _id: string;
@@ -28,8 +28,8 @@ export default function ProjectsSection() {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const response = await axios.get('/api/projects/search');
-        const allProjects = response.data.projects || [];
+        const data = await api.get('/api/projects/search');
+        const allProjects = data.projects || [];
 
         if (activeTab === 'topRated') {
           const sortedByRating = [...allProjects].sort((a, b) => (b.rating || 0) - (a.rating || 0));

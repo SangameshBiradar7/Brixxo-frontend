@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { io, Socket } from 'socket.io-client';
-import axios from 'axios';
+import { api } from '@/lib/api';
 
 interface NotificationContextType {
   unreadCount: number;
@@ -36,8 +36,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     if (!user) return;
 
     try {
-      const response = await axios.get('/api/messages/conversations/all');
-      const totalUnread = response.data.reduce((total: number, conv: any) => total + conv.unreadCount, 0);
+      const data = await api.get('/api/messages/conversations/all');
+      const totalUnread = data.reduce((total: number, conv: any) => total + conv.unreadCount, 0);
       setUnreadCount(totalUnread);
     } catch (error) {
       console.error('Error fetching unread count:', error);
@@ -48,8 +48,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     if (!user) return;
 
     try {
-      const response = await axios.get('/api/notifications?unreadOnly=true');
-      setNotificationCount(response.data.unreadCount || 0);
+      const data = await api.get('/api/notifications?unreadOnly=true');
+      setNotificationCount(data.unreadCount || 0);
     } catch (error) {
       console.error('Error fetching notification count:', error);
     }

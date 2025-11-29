@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import axios from 'axios';
 import Link from 'next/link';
 
 export default function AddProjectPage() {
@@ -46,12 +45,18 @@ export default function AddProjectPage() {
 
   const loadProjectForEdit = async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/projects/${id}`, {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(`${backendUrl}/api/projects/${id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      const projectData = response.data;
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const projectData = await response.json();
       setProject({
         title: projectData.title || '',
         description: projectData.description || '',
@@ -86,22 +91,44 @@ export default function AddProjectPage() {
         images: project.images
       };
 
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
       let response;
+
       if (isEdit) {
-        response = await axios.put(`http://localhost:5000/api/projects/company/${projectId}`, projectData, {
+        response = await fetch(`${backendUrl}/api/projects/company/${projectId}`, {
+          method: 'PUT',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+          },
+          body: JSON.stringify(projectData)
         });
-        console.log('Project updated:', response.data);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log('Project updated:', responseData);
         alert('Project updated successfully!');
       } else {
-        response = await axios.post('http://localhost:5000/api/projects/company', projectData, {
+        response = await fetch(`${backendUrl}/api/projects/company`, {
+          method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+          },
+          body: JSON.stringify(projectData)
         });
-        console.log('Project created:', response.data);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log('Project created:', responseData);
         alert('Project added successfully!');
       }
 
@@ -147,17 +174,25 @@ export default function AddProjectPage() {
 
     try {
       console.log('📤 Sending upload request to /api/uploads/images');
-      const response = await axios.post('/api/uploads/images', formData, {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(`${backendUrl}/api/uploads/images`, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
+        body: formData
       });
 
-      console.log('✅ Upload response:', response.data);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log('✅ Upload response:', responseData);
 
       // Add uploaded image URLs to project
-      const uploadedUrls = response.data.urls || [];
+      const uploadedUrls = responseData.urls || [];
       console.log('📸 Uploaded URLs:', uploadedUrls);
 
       setProject(prev => ({
