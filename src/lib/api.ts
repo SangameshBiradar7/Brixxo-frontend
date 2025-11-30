@@ -1,7 +1,8 @@
 // API utility functions for consistent backend communication
 
 const getBackendUrl = () => {
-  return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+  // Temporary hardcoded URL until Vercel environment variable is set
+  return 'https://brixxo-backend.onrender.com'; // Replace with your actual Render backend URL
 };
 
 const getAuthHeaders = (): Record<string, string> => {
