@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { api } from '@/lib/api';
 
 export default function DashboardHeader() {
   const { user, logout } = useAuth();
@@ -43,12 +43,8 @@ export default function DashboardHeader() {
       if (!user) return;
 
       try {
-        const response = await axios.get('/api/notifications', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        setNotificationCount(response.data.unreadCount || 0);
+        const data = await api.get('/api/notifications?unreadOnly=true');
+        setNotificationCount(data.unreadCount || 0);
       } catch (error) {
         console.error('Error fetching notification count:', error);
       }

@@ -5,24 +5,24 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
-  // API rewrites
-  async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-    return [
-      {
-        source: '/auth/:path*',
-        destination: `${backendUrl}/auth/:path*`,
-      },
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`,
-      },
-      {
-        source: '/uploads/:path*',
-        destination: `${backendUrl}/uploads/:path*`,
-      },
-    ];
-  },
+  // API rewrites disabled - using direct fetch calls instead
+  // async rewrites() {
+  //   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+  //   return [
+  //     {
+  //       source: '/auth/:path*',
+  //       destination: `${backendUrl}/auth/:path*`,
+  //     },
+  //     {
+  //       source: '/api/:path*',
+  //       destination: `${backendUrl}/api/:path*`,
+  //     },
+  //     {
+  //       source: '/uploads/:path*',
+  //       destination: `${backendUrl}/uploads/:path*`,
+  //     },
+  //   ];
+  // },
 
   // Image optimization with CDN support
   images: {

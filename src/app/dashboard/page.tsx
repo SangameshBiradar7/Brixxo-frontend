@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import axios from 'axios';
+import { api } from '@/lib/api';
 import {
   Home,
   FileText,
@@ -111,13 +111,9 @@ function HomeownerDashboardContent() {
         setLoading(true);
 
         // Fetch user's requirements
-        const requirementsResponse = await axios.get('/api/requirements/my', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const requirementsData = await api.get('/api/requirements/my');
 
-        const userRequirements = requirementsResponse.data || [];
+        const userRequirements = requirementsData || [];
         setRequirements(userRequirements);
 
         // Calculate active requirements count
@@ -139,13 +135,9 @@ function HomeownerDashboardContent() {
         // Fetch recent notifications/activities
         setLoadingActivities(true);
         try {
-          const notificationsResponse = await axios.get('/api/notifications?limit=5', {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-          });
+          const notificationsData = await api.get('/api/notifications?limit=5');
 
-          const notifications = notificationsResponse.data.notifications || [];
+          const notifications = notificationsData.notifications || [];
           const activities = notifications.map((notification: NotificationData) => ({
             message: notification.message,
             time: formatTimeAgo(new Date(notification.createdAt)),
