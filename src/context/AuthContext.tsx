@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { api } from '@/lib/api';
 
 interface User {
   _id: string;
@@ -76,20 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Fetch user profile with timeout and retry logic
       const fetchUserProfile = async (retries = 3) => {
         try {
-          const response = await fetch(`${backendUrl}/api/users/profile`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
+          const data = await api.get('/api/users/profile');
           setUser(data);
 
           // Join user's personal room for notifications
@@ -123,21 +111,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<User> => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-      const res = await fetch(`${backendUrl}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
-      }
-
-      const { token, user } = await res.json();
+      const data = await api.post('/auth/login', { email, password });
+      const { token, user } = data;
       localStorage.setItem('token', token);
       setUser(user);
       return user;
@@ -149,21 +124,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (name: string, email: string, password: string, role: string) => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-      const res = await fetch(`${backendUrl}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, email, password, role })
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
-      }
-
-      const { token, user } = await res.json();
+      const data = await api.post('/auth/register', { name, email, password, role });
+      const { token, user } = data;
       localStorage.setItem('token', token);
       setUser(user);
     } catch (error: any) {
