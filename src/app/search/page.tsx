@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
 import Navigation from '@/components/Navigation';
+import { api } from '@/lib/api';
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,8 +80,8 @@ export default function SearchPage() {
     const loadInitialData = async () => {
       try {
         const [projectsRes, companiesRes] = await Promise.all([
-          axios.get('/api/projects/search'),
-          axios.get('/api/projects/top-professionals')
+          api.get('/api/projects/search'),
+          api.get('/api/projects/top-professionals')
         ]);
 
         setProjects(projectsRes.data.projects || []);
@@ -131,8 +131,8 @@ export default function SearchPage() {
           sortBy: filters.sortBy
         });
 
-        const response = await axios.get(`/api/projects/search?${params}`);
-        setProjects(response.data.projects || []);
+        const data = await api.get(`/api/projects/search?${params}`);
+        setProjects(data.projects || []);
       } catch (error) {
         console.error('Search error:', error);
       } finally {

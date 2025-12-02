@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/Navigation';
+import { api } from '@/lib/api';
 
 // Interface for project data from backend API
 interface Project {
@@ -84,22 +85,7 @@ export default function ProjectDetailPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/projects/${projectId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Project not found');
-        }
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await api.get(`/api/projects/${projectId}`);
       console.log('✅ ProjectDetailPage: Received project data:', data);
 
       setProject(data);
