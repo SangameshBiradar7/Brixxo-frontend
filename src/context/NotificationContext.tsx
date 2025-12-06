@@ -58,7 +58,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   useEffect(() => {
     if (user) {
       // Initialize socket connection for notifications
-      const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000');
+      const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
       setSocket(newSocket);
 
       // Join user's room

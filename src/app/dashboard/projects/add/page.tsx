@@ -45,7 +45,7 @@ export default function AddProjectPage() {
 
   const loadProjectForEdit = async (id: string) => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       const response = await fetch(`${backendUrl}/api/projects/${id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -91,7 +91,7 @@ export default function AddProjectPage() {
         images: project.images
       };
 
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       let response;
 
       if (isEdit) {
@@ -174,7 +174,7 @@ export default function AddProjectPage() {
 
     try {
       console.log('📤 Sending upload request to /api/uploads/images');
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       const response = await fetch(`${backendUrl}/api/uploads/images`, {
         method: 'POST',
         headers: {

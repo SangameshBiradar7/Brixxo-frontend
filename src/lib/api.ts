@@ -1,7 +1,7 @@
 // API utility functions for consistent backend communication
 
 const getBackendUrl = () => {
-  return process.env.NEXT_PUBLIC_API_URL || 'https://brixxo-backend.onrender.com'; // Fallback for development
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'; // Fallback for development
 };
 
 const getAuthHeaders = (): Record<string, string> => {
