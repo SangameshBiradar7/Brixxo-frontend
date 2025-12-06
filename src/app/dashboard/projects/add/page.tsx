@@ -46,7 +46,7 @@ export default function AddProjectPage() {
   const loadProjectForEdit = async (id: string) => {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${backendUrl}/api/projects/${id}`, {
+      const response = await fetch(`${backendUrl}/projects/${id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -95,7 +95,7 @@ export default function AddProjectPage() {
       let response;
 
       if (isEdit) {
-        response = await fetch(`${backendUrl}/api/projects/company/${projectId}`, {
+        response = await fetch(`${backendUrl}/projects/company/${projectId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function AddProjectPage() {
         console.log('Project updated:', responseData);
         alert('Project updated successfully!');
       } else {
-        response = await fetch(`${backendUrl}/api/projects/company`, {
+        response = await fetch(`${backendUrl}/projects/company`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ export default function AddProjectPage() {
     try {
       console.log('📤 Sending upload request to /api/uploads/images');
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${backendUrl}/api/uploads/images`, {
+      const response = await fetch(`${backendUrl}/uploads/images`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

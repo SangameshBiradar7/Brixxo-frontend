@@ -41,7 +41,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const backendUrl = apiUrl.replace('/api', ''); // Remove /api for socket connection
 
     // Initialize Socket.IO connection
     const socketConnection = io(backendUrl, {
@@ -77,7 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Fetch user profile with timeout and retry logic
       const fetchUserProfile = async (retries = 3) => {
         try {
-          const data = await api.get('/api/users/profile');
+          const data = await api.get('/users/profile');
           setUser(data);
 
           // Join user's personal room for notifications

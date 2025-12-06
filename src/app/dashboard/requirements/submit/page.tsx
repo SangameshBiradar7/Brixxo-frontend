@@ -164,7 +164,7 @@ export default function SubmitRequirementPage() {
       });
 
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${backendUrl}/api/requirements`, {
+      const res = await fetch(`${backendUrl}/requirements`, {
         method: 'POST',
         body: submitData
       });

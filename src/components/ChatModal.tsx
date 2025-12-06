@@ -83,7 +83,9 @@ export default function ChatModal({
     console.log('Initializing new socket connection...');
     setConnectionStatus('connecting');
 
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const backendUrl = apiUrl.replace('/api', '');
+    const newSocket = io(backendUrl, {
       transports: ['websocket', 'polling'],
       timeout: 20000,
       forceNew: false, // Reuse connection if possible
