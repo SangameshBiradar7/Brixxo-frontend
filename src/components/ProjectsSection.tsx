@@ -28,7 +28,7 @@ export default function ProjectsSection() {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const data = await api.get('/api/projects/search');
+        const data = await api.get('/api/projects');
         const allProjects = data.projects || [];
 
         if (activeTab === 'topRated') {

@@ -80,7 +80,7 @@ export default function SearchPage() {
     const loadInitialData = async () => {
       try {
         const [projectsRes, companiesRes] = await Promise.all([
-          api.get('/api/projects/search'),
+          api.get('/api/projects'),
           api.get('/api/projects/top-professionals')
         ]);
 
@@ -131,7 +131,7 @@ export default function SearchPage() {
           sortBy: filters.sortBy
         });
 
-        const data = await api.get(`/api/projects/search?${params}`);
+        const data = await api.get(`/api/projects?${params}`);
         setProjects(data.projects || []);
       } catch (error) {
         console.error('Search error:', error);

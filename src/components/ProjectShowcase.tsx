@@ -31,7 +31,7 @@ export default function ProjectShowcase() {
       setLoading(true);
       setError(null);
 
-      const data = await api.get('/api/projects/search?limit=6&sortBy=newest');
+      const data = await api.get('/api/projects?limit=6&sortBy=newest');
       console.log('✅ ProjectShowcase: Received projects data:', data);
 
       setProjects(data.projects || []);
