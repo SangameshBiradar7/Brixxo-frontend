@@ -20,10 +20,14 @@ interface Project {
   };
 }
 
+type TabType = 'newest' | 'topRated';
+
 export default function ProjectShowcase() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [newestProjects, setNewestProjects] = useState<Project[]>([]);
+  const [topRatedProjects, setTopRatedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('newest');
 
   const fetchProjects = async () => {
     try {
@@ -31,14 +35,22 @@ export default function ProjectShowcase() {
       setLoading(true);
       setError(null);
 
-      const data = await api.get('/projects?limit=6&sortBy=newest');
-      console.log('✅ ProjectShowcase: Received projects data:', data);
+      // Fetch both newest and top-rated projects
+      const [newestData, topRatedData] = await Promise.all([
+        api.get('/projects?limit=6&sortBy=newest'),
+        api.get('/projects?limit=6&sortBy=rating')
+      ]);
 
-      setProjects(data.projects || []);
+      console.log('✅ ProjectShowcase: Received newest projects:', newestData);
+      console.log('✅ ProjectShowcase: Received top-rated projects:', topRatedData);
+
+      setNewestProjects(newestData.projects || []);
+      setTopRatedProjects(topRatedData.projects || []);
     } catch (error) {
       console.error('❌ ProjectShowcase: Error fetching projects:', error);
       setError(error instanceof Error ? error.message : 'Failed to load projects');
-      setProjects([]);
+      setNewestProjects([]);
+      setTopRatedProjects([]);
     } finally {
       setLoading(false);
     }
@@ -63,6 +75,8 @@ export default function ProjectShowcase() {
     console.log('🔄 ProjectShowcase: Retrying to fetch projects...');
     fetchProjects();
   };
+
+  const currentProjects = activeTab === 'newest' ? newestProjects : topRatedProjects;
 
   if (loading) {
     return (
@@ -118,7 +132,7 @@ export default function ProjectShowcase() {
     );
   }
 
-  if (projects.length === 0) {
+  if (currentProjects.length === 0) {
     return (
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -160,16 +174,42 @@ export default function ProjectShowcase() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-poppins mb-4">
-            Recent Projects by Our Partners
+            Featured Projects by Our Partners
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            See what our verified construction experts have recently built.
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Discover the latest and highest-rated construction projects from our verified experts.
           </p>
+
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-gray-100 rounded-xl p-2 shadow-lg border border-gray-200">
+              <button
+                onClick={() => setActiveTab('newest')}
+                className={`px-8 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeTab === 'newest'
+                    ? 'bg-[#00A36C] text-white shadow-md transform scale-105'
+                    : 'text-gray-600 hover:text-[#00A36C] hover:bg-gray-50'
+                }`}
+              >
+                🆕 Newest Projects
+              </button>
+              <button
+                onClick={() => setActiveTab('topRated')}
+                className={`px-8 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  activeTab === 'topRated'
+                    ? 'bg-[#00A36C] text-white shadow-md transform scale-105'
+                    : 'text-gray-600 hover:text-[#00A36C] hover:bg-gray-50'
+                }`}
+              >
+                ⭐ Top Rated
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Desktop Grid */}
         <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {projects.map((project, index) => (
+          {currentProjects.map((project: Project, index: number) => (
             <div
               key={project._id}
               className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden"
@@ -242,7 +282,7 @@ export default function ProjectShowcase() {
         {/* Mobile Carousel */}
         <div className="md:hidden overflow-x-auto">
           <div className="flex gap-4 pb-4" style={{ width: 'max-content' }}>
-            {projects.map((project, index) => (
+            {currentProjects.map((project: Project, index: number) => (
               <div
                 key={project._id}
                 className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 flex-shrink-0 w-80"
