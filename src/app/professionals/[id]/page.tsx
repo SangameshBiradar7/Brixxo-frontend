@@ -107,7 +107,7 @@ export default function ProfessionalDetailPage() {
       if (!id) return;
 
       try {
-        const response = await axios.get(`/api/professionals/${id}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/professionals/${id}`);
         setProfessional(response.data);
         if (response.data.portfolio && response.data.portfolio.length > 0) {
           setSelectedImage(response.data.portfolio[0]);
@@ -400,7 +400,7 @@ export default function ProfessionalDetailPage() {
                 ) : (
                   <div className="bg-white rounded-2xl shadow-xl p-12 text-center border border-slate-100">
                     <div className="w-24 h-24 bg-gradient-to-r from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Image className="w-12 h-12 text-slate-400" alt="" />
+                      <Image className="w-12 h-12 text-slate-400" />
                     </div>
                     <h3 className="text-2xl font-bold text-slate-900 mb-4 font-poppins">Portfolio Coming Soon</h3>
                     <p className="text-slate-600 text-lg leading-relaxed">
