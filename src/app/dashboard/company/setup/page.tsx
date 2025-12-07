@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import axios from 'axios';
+import { api } from '@/lib/api';
 import Link from 'next/link';
 
 export default function CompanySetupPage() {
@@ -46,7 +46,7 @@ export default function CompanySetupPage() {
     // Load existing company data
     const loadCompanyData = async () => {
       try {
-        const response = await axios.get('/api/companies/my/company');
+        const response = await api.get('/companies/my/company');
         if (response.data) {
           setIsEditMode(true);
           setCompany({
@@ -98,12 +98,12 @@ export default function CompanySetupPage() {
           ...company,
           portfolioImages: portfolioImages
         };
-        const response = await axios.put('/api/companies/my/company', updateData);
+        const response = await api.put('/companies/my/company', updateData);
         savedCompany = response.data;
         alert('Company profile updated successfully!');
       } else {
         // Create new company - exclude _id (let MongoDB generate it)
-        const response = await axios.post('/api/companies', companyData);
+        const response = await api.post('/companies', companyData);
         savedCompany = response.data;
         alert('Company profile created successfully! Your portfolio images have been uploaded.');
       }
@@ -130,7 +130,7 @@ export default function CompanySetupPage() {
     }
 
     try {
-      await axios.delete('/api/companies/my/company');
+      await api.delete('/companies/my/company');
       alert('Company profile deleted successfully!');
       router.push('/dashboard');
     } catch (error: any) {
@@ -203,12 +203,7 @@ export default function CompanySetupPage() {
     }
 
     try {
-      const response = await axios.post('/api/uploads/images', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
+      const response = await api.upload('/uploads/images', formData);
 
       // Add uploaded image URLs to portfolio
       const uploadedUrls = response.data.urls || [];
