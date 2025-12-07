@@ -5,7 +5,7 @@ const getBackendUrl = () => {
 };
 
 const buildUrl = (endpoint: string) => {
-  return `${getBackendUrl().replace(/\/$/, "")}${endpoint}`;
+  return `${getBackendUrl().replace(/\/$/, "")}/api${endpoint}`;
 };
 
 const getAuthHeaders = (): Record<string, string> => {
