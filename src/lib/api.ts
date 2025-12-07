@@ -1,7 +1,11 @@
 // API utility functions for consistent backend communication
 
 const getBackendUrl = () => {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'; // Fallback for development
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+};
+
+const buildUrl = (endpoint: string) => {
+  return `${getBackendUrl().replace(/\/$/, "")}${endpoint}`;
 };
 
 const getAuthHeaders = (): Record<string, string> => {
@@ -17,13 +21,11 @@ export const api = {
       ...getAuthHeaders()
     };
 
-    const response = await fetch(`${getBackendUrl()}${endpoint}`, {
-      headers
-    });
+    const response = await fetch(buildUrl(endpoint), { headers });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      throw { message: errorData.message || `HTTP error! status: ${response.status}`, status: response.status };
     }
 
     return response.json();
@@ -36,7 +38,7 @@ export const api = {
       ...getAuthHeaders()
     };
 
-    const response = await fetch(`${getBackendUrl()}${endpoint}`, {
+    const response = await fetch(buildUrl(endpoint), {
       method: 'POST',
       headers,
       body: data ? JSON.stringify(data) : undefined
@@ -44,7 +46,7 @@ export const api = {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      throw { message: errorData.message || `HTTP error! status: ${response.status}`, status: response.status };
     }
 
     return response.json();
@@ -57,7 +59,7 @@ export const api = {
       ...getAuthHeaders()
     };
 
-    const response = await fetch(`${getBackendUrl()}${endpoint}`, {
+    const response = await fetch(buildUrl(endpoint), {
       method: 'PUT',
       headers,
       body: data ? JSON.stringify(data) : undefined
@@ -65,7 +67,7 @@ export const api = {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      throw { message: errorData.message || `HTTP error! status: ${response.status}`, status: response.status };
     }
 
     return response.json();
@@ -73,16 +75,19 @@ export const api = {
 
   // DELETE request
   delete: async (endpoint: string) => {
-    const headers = getAuthHeaders();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders()
+    };
 
-    const response = await fetch(`${getBackendUrl()}${endpoint}`, {
+    const response = await fetch(buildUrl(endpoint), {
       method: 'DELETE',
       headers
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      throw { message: errorData.message || `HTTP error! status: ${response.status}`, status: response.status };
     }
 
     return response.json();
@@ -90,9 +95,9 @@ export const api = {
 
   // File upload (multipart/form-data)
   upload: async (endpoint: string, formData: FormData) => {
-    const headers = getAuthHeaders();
+    const headers = getAuthHeaders(); // Do NOT set Content-Type manually
 
-    const response = await fetch(`${getBackendUrl()}${endpoint}`, {
+    const response = await fetch(buildUrl(endpoint), {
       method: 'POST',
       headers,
       body: formData
@@ -100,7 +105,7 @@ export const api = {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      throw { message: errorData.message || `HTTP error! status: ${response.status}`, status: response.status };
     }
 
     return response.json();

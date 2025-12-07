@@ -45,7 +45,18 @@ export default function ProjectShowcase() {
   };
 
   useEffect(() => {
-    fetchProjects();
+    let isMounted = true;
+
+    const load = async () => {
+      if (!isMounted) return;
+      await fetchProjects();
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleRetry = () => {

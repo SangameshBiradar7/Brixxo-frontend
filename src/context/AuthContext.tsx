@@ -24,27 +24,21 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    const backendUrl = apiUrl.replace('/api', ''); // Remove /api for socket connection
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const backendUrl = apiUrl.replace('/api', '');
 
-    // Initialize Socket.IO connection
+    // --- SOCKET INITIALIZATION ---
     const socketConnection = io(backendUrl, {
       transports: ['websocket', 'polling'],
       upgrade: true,
@@ -52,92 +46,76 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     setSocket(socketConnection);
 
-    // Socket event listeners for real-time updates
-    socketConnection.on('professionalCreated', (data) => {
-      console.log('Professional created:', data);
-      // Handle real-time professional creation
-    });
+    // General events
+    socketConnection.on('professionalCreated', (d) => console.log('Real-time created:', d));
+    socketConnection.on('professionalUpdated', (d) => console.log('Real-time updated:', d));
+    socketConnection.on('professionalDeleted', (d) => console.log('Real-time deleted:', d));
+    socketConnection.on('professionalVerified', (d) => console.log('Real-time verified:', d));
 
-    socketConnection.on('professionalUpdated', (data) => {
-      console.log('Professional updated:', data);
-      // Handle real-time professional updates
-    });
-
-    socketConnection.on('professionalDeleted', (data) => {
-      console.log('Professional deleted:', data);
-      // Handle real-time professional deletion
-    });
-
-    socketConnection.on('professionalVerified', (data) => {
-      console.log('Professional verified:', data);
-      // Handle real-time professional verification
-    });
-
+    // --- PROFILE FETCH ---
     const token = localStorage.getItem('token');
+
     if (token) {
-      // Fetch user profile with timeout and retry logic
-      const fetchUserProfile = async (retries = 3) => {
+      const fetchProfile = async (retries = 3) => {
         try {
           const data = await api.get('/users/profile');
-          setUser(data);
 
-          // Join user's personal room for notifications
-          if (data._id) {
-            socketConnection.emit('join', data._id);
-          }
+          // FIX: Extract actual user object
+          const userData = data.user || data;
+          setUser(userData);
+
+          // Join private room AFTER socket connects
+          socketConnection.once('connect', () => {
+            socketConnection.emit('join', userData._id);
+          });
+
         } catch (err: any) {
-          console.error('Failed to fetch user profile:', err);
-          if (retries > 0 && !err.message.includes('401') && !err.message.includes('403')) {
-            // Retry after a delay for non-auth errors
-            setTimeout(() => fetchUserProfile(retries - 1), 2000);
-          } else {
-            // Clear invalid token
-            localStorage.removeItem('token');
+          console.error('Profile fetch failed:', err);
+
+          if (retries > 0 && err?.status && ![401, 403].includes(err.status)) {
+            return setTimeout(() => fetchProfile(retries - 1), 2000);
           }
+
+          localStorage.removeItem('token');
         } finally {
           setLoading(false);
         }
       };
 
-      fetchUserProfile();
+      fetchProfile();
     } else {
       setLoading(false);
     }
 
-    // Cleanup socket connection on unmount
     return () => {
       socketConnection.disconnect();
     };
+
   }, []);
 
+  // --- LOGIN ---
   const login = async (email: string, password: string): Promise<User> => {
-    try {
-      const data = await api.post('/auth/login', { email, password });
-      const { token, user } = data;
-      localStorage.setItem('token', token);
-      setUser(user);
-      return user;
-    } catch (error: any) {
-      console.error('Login error:', error);
-      throw new Error(error.message || 'Login failed');
-    }
+    const data = await api.post('/auth/login', { email, password });
+
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+
+    return data.user;
   };
 
+  // --- REGISTER ---
   const register = async (name: string, email: string, password: string, role: string) => {
-    try {
-      const data = await api.post('/auth/register', { name, email, password, role });
-      const { token, user } = data;
-      localStorage.setItem('token', token);
-      setUser(user);
-    } catch (error: any) {
-      console.error('Registration error:', error);
-      throw new Error(error.message || 'Registration failed');
-    }
+    const data = await api.post('/auth/register', { name, email, password, role });
+
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
   };
 
+  // --- LOGOUT ---
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    socket?.disconnect(); // fix socket issue
   };
 
   return (
