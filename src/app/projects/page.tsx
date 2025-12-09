@@ -261,4 +261,8 @@ export default function ProjectsPage() {
     </div>
   );
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> afbb95d6eae3d88f00baf5bda5b2f8b5fb382cff
