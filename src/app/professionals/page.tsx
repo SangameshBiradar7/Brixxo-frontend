@@ -143,7 +143,7 @@ function ProfessionalsPage() {
       setError(null);
 
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${backendUrl}/professionals`, {
+      const response = await fetch(`${backendUrl}/api/professionals`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -709,4 +709,5 @@ function ProfessionalsPage() {
       </div>
     </div>
   );
+
 }
