@@ -65,7 +65,7 @@ export default function ProjectsPage() {
       setError(null);
 
       // Fetch projects from backend API
-      const data = await api.get('/api/projects');
+      const data = await api.get('/projects');
       console.log('✅ ProjectsPage: Received projects data:', data);
 
       // Validate and set project data
@@ -260,4 +260,5 @@ export default function ProjectsPage() {
       </div>
     </div>
   );
+
 }

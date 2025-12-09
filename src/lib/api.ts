@@ -5,7 +5,9 @@ const getBackendUrl = () => {
 };
 
 const buildUrl = (endpoint: string) => {
-  return `${getBackendUrl().replace(/\/$/, "")}/api${endpoint}`;
+  // Don't add /api prefix if endpoint already starts with /auth
+  const prefix = endpoint.startsWith('/auth') ? '' : '/api';
+  return `${getBackendUrl().replace(/\/$/, "")}${prefix}${endpoint}`;
 };
 
 const getAuthHeaders = (): Record<string, string> => {

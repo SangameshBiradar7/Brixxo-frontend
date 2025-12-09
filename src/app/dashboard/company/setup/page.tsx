@@ -16,6 +16,8 @@ export default function CompanySetupPage() {
     _id: '',
     name: '',
     description: '',
+    category: 'Contractor',
+    location: '',
     website: '',
     phone: '',
     address: '',
@@ -53,6 +55,8 @@ export default function CompanySetupPage() {
             _id: response.data._id || '',
             name: response.data.name || '',
             description: response.data.description || '',
+            category: response.data.category || 'Contractor',
+            location: response.data.location || '',
             website: response.data.website || '',
             phone: response.data.phone || '',
             address: response.data.address || '',
@@ -292,6 +296,37 @@ export default function CompanySetupPage() {
                     onChange={(e) => setCompany(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     placeholder="Enter your company name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company Category *
+                  </label>
+                  <select
+                    required
+                    value={company.category}
+                    onChange={(e) => setCompany(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                  >
+                    <option value="Contractor">Contractor</option>
+                    <option value="Architect">Architect</option>
+                    <option value="Interior Designer">Interior Designer</option>
+                    <option value="Engineer">Engineer</option>
+                    <option value="Supplier">Supplier</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location (City, State) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={company.location}
+                    onChange={(e) => setCompany(prev => ({ ...prev, location: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                    placeholder="e.g., Mumbai, Maharashtra"
                   />
                 </div>
                 <div>
