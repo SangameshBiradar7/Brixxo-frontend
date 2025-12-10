@@ -5,7 +5,17 @@ import Link from 'next/link';
 import Navigation from '@/components/Navigation';
 
 export default function RoleSelectionPage() {
-  const [selectedRole, setSelectedRole] = useState<string>('');
+  const router = useRouter();
+  const [selectedRole, setSelectedRole] = useState<'homeowner' | 'professional' | null>(null);
+
+  const handleRoleSelect = (role: 'homeowner' | 'professional') => {
+    setSelectedRole(role);
+    if (role === 'homeowner') {
+      router.push('/register/user');
+    } else {
+      router.push('/register/professional');
+    }
+  };
 
   const professionalRoles = [
     {
@@ -84,46 +94,71 @@ export default function RoleSelectionPage() {
             </div>
 
             {/* Role Selection Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {professionalRoles.map((role) => (
-                <div
-                  key={role.id}
-                  onClick={() => setSelectedRole(role.id)}
-                  className={`bg-white rounded-2xl shadow-lg p-6 border-2 cursor-pointer transition-all duration-300 hover:shadow-xl transform hover:scale-105 ${
-                    selectedRole === role.id
-                      ? 'border-teal-500 ring-2 ring-teal-100 bg-teal-50'
-                      : 'border-slate-200 hover:border-teal-300'
-                  }`}
-                >
-                  <div className="text-center mb-4">
-                    <div className="text-4xl mb-3">{role.icon}</div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">{role.title}</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed">{role.description}</p>
+            <div className="grid grid-cols-1 gap-6">
+              {/* Homeowner Card */}
+              <div
+                onClick={() => handleRoleSelect('homeowner')}
+                className={`card p-8 cursor-pointer animate-fade-in hover-lift ${
+                  selectedRole === 'homeowner' ? 'ring-2 ring-orange-500 bg-orange-50' : ''
+                }`}
+              >
+                <div className="text-center mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-scale-in">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
                   </div>
-
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-slate-800 text-sm">Key Features:</h4>
-                    <ul className="space-y-1">
-                      {role.features.map((feature, index) => (
-                        <li key={index} className="flex items-center text-sm text-slate-600">
-                          <svg className="w-4 h-4 text-teal-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {selectedRole === role.id && (
-                    <div className="mt-4 flex justify-center">
-                      <div className="bg-teal-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                        Selected
-                      </div>
-                    </div>
-                  )}
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">I'm a Homeowner</h3>
+                  <p className="text-gray-600">Find trusted professionals and compare quotes</p>
                 </div>
-              ))}
+                <button className="btn-primary w-full">
+                  Continue as Homeowner
+                </button>
+              </div>
+
+              {/* Professional Card */}
+              <div
+                onClick={() => setSelectedRole('professional')}
+                className={`card p-8 cursor-pointer animate-fade-in hover-lift ${
+                  selectedRole === 'professional' ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                }`}
+              >
+                <div className="text-center mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-scale-in">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">I'm a Professional</h3>
+                  <p className="text-gray-600">Manage your business and connect with clients</p>
+                </div>
+
+                {/* Professional Types List */}
+                <div className="mb-6">
+                  <p className="text-sm text-gray-600 mb-4 font-medium">Choose your profession:</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <span className="text-sm text-gray-700 font-medium">🔨 Contractor</span>
+                    </div>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <span className="text-sm text-gray-700 font-medium">🎨 Interior Designer</span>
+                    </div>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <span className="text-sm text-gray-700 font-medium">🔄 Renovator</span>
+                    </div>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                      <span className="text-sm text-gray-700 font-medium">📐 Architect</span>
+                    </div>
+                    <div className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors col-span-2">
+                      <span className="text-sm text-gray-700 font-medium">➕ Other</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button className="btn-secondary w-full">
+                  Continue as Professional
+                </button>
+              </div>
             </div>
 
             {/* Navigation Buttons */}

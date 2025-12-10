@@ -13,12 +13,13 @@ const schema = yup.object({
   email: yup.string().email('Invalid email').required('Email is required'),
   password: yup.string().required('Password is required'),
 });
- 
+
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'homeowner' | 'professional' | null>(null);
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
@@ -29,7 +30,9 @@ export default function LoginPage() {
     try {
       const user = await login(data.email, data.password);
       // Redirect based on user role
-      if (user.role === 'homeowner') {
+      if (user.role === 'admin') {
+        router.push('/admin');
+      } else if (user.role === 'homeowner') {
         router.push('/dashboard');
       } else if (['contractor', 'architect', 'interior-designer', 'renovator', 'structural-engineer', 'estimation-engineer', 'professional', 'company_admin'].includes(user.role)) {
         router.push('/dashboard/professional');
