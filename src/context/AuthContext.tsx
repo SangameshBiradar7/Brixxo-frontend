@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { api } from '@/lib/api';
-import { useRouter } from 'next/navigation';
+import
 
 interface User {
   _id: string;
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // --- REGISTER ---
   const register = async (name: string, email: string, password: string, role: string) => {
-    const data = await api.post('/register', { name, email, password, role });
+    const data = await api.post('/auth/register', { name, email, password, role });
 
     localStorage.setItem('token', data.token);
     setUser(data.user);
