@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { api } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 interface User {
   _id: string;
