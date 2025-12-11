@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     password: string,
     role: string
   ) => {
-    const data = await api.post('/auth/register', {
+    const data = await api.post('/api/auth/register', {
       name,
       email,
       password,
