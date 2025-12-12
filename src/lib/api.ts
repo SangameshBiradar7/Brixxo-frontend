@@ -1,15 +1,12 @@
 // API utility functions for consistent backend communication
 
-// Always use the backend URL from Vercel
+// Use only NEXT_PUBLIC_API_URL in your frontend
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-// Build full URL safely
 const buildUrl = (endpoint: string) => {
-  // Ensure endpoint starts with /
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : "/" + endpoint;
-
-  // Always prepend /api to all endpoints
-  return `${API_BASE.replace(/\/$/, "")}/api${cleanEndpoint}`;
+  const prefix = cleanEndpoint.startsWith("/auth") ? "" : "/api";
+  return `${API_BASE.replace(/\/$/, "")}${prefix}${cleanEndpoint}`;
 };
 
 
