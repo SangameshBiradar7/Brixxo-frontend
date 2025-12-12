@@ -13,6 +13,7 @@ const buildUrl = (endpoint: string) => {
 };
 
 
+
 // Get authentication headers (if token exists)
 const getAuthHeaders = (): Record<string, string> => {
   if (typeof window === "undefined") return {};
