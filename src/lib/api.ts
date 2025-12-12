@@ -1,15 +1,12 @@
 // API utility functions for consistent backend communication
 
-// Use only NEXT_PUBLIC_API_URL in your frontend
+// Always use the backend URL from Vercel
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+// Build full URL safely
 const buildUrl = (endpoint: string) => {
-  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : "/" + endpoint;
-  const prefix = cleanEndpoint.startsWith("/auth") ? "" : "/api";
-  return `${API_BASE.replace(/\/$/, "")}${prefix}${cleanEndpoint}`;
+  return `${API_BASE.replace(/\/$/, "")}/api${endpoint}`;
 };
-
-
 
 // Get authentication headers (if token exists)
 const getAuthHeaders = (): Record<string, string> => {
