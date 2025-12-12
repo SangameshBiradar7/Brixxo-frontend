@@ -19,7 +19,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'homeowner' | 'professional' | null>(null);
+  const [userType, setUserType] = useState('');
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
@@ -94,213 +94,126 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Login Type Selection */}
-            <div className="grid grid-cols-1 gap-4">
-              {/* Homeowner Login Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 group">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Homeowner Login</h3>
-                  <p className="text-slate-600 text-sm">Find and connect with construction professionals</p>
+            {/* Single Login Form */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                 </div>
-
-                <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                  <input type="hidden" value="homeowner" name="userType" />
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      {...register('email')}
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-slate-50 focus:bg-white placeholder-slate-400 text-black"
-                      placeholder="Enter your email address"
-                    />
-                    {errors.email && (
-                      <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
-                        Password
-                      </label>
-                      <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800 transition-colors">
-                        Forgot Password?
-                      </Link>
-                    </div>
-                    <div className="relative">
-                      <input
-                        {...register('password')}
-                        id="password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="current-password"
-                        required
-                        className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-slate-50 focus:bg-white placeholder-slate-400 text-black"
-                        placeholder="Enter your password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-4 flex items-center"
-                      >
-                        <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          {showPassword ? (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                          ) : (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          )}
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center">
-                    <input
-                      id="remember-me"
-                      name="remember-me"
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
-                    />
-                    <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
-                      Remember me
-                    </label>
-                  </div>
-
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-700 text-sm">{error}</p>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Signing in...' : 'Sign In as Homeowner'}
-                  </button>
-                </form>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Welcome Back</h3>
+                <p className="text-slate-600 text-sm">Sign in to your account</p>
               </div>
 
-              {/* Professional Login Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200 hover:shadow-xl transition-all duration-300 group">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-teal-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Professional Login</h3>
-                  <p className="text-slate-600 text-sm">Manage your business and connect with clients</p>
+              <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                {/* User Type Selection */}
+                <div>
+                  <label htmlFor="userType" className="block text-sm font-semibold text-slate-700 mb-2">
+                    I am a
+                  </label>
+                  <select
+                    id="userType"
+                    value={userType}
+                    onChange={(e) => setUserType(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-slate-50 focus:bg-white text-black"
+                  >
+                    <option value="">Select your account type</option>
+                    <option value="homeowner">Homeowner</option>
+                    <option value="professional">Professional/Contractor</option>
+                    <option value="company_admin">Company Administrator</option>
+                    <option value="admin">Administrator</option>
+                  </select>
                 </div>
 
-                <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-                  <input type="hidden" value="professional" name="userType" />
-                  <div>
-                    <label htmlFor="email-pro" className="block text-sm font-semibold text-slate-700 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      {...register('email')}
-                      id="email-pro"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 bg-slate-50 focus:bg-white placeholder-slate-400 text-black"
-                      placeholder="Enter your email address"
-                    />
-                    {errors.email && (
-                      <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label htmlFor="password-pro" className="block text-sm font-semibold text-slate-700">
-                        Password
-                      </label>
-                      <Link href="/forgot-password" className="text-sm text-teal-600 hover:text-teal-800 transition-colors">
-                        Forgot Password?
-                      </Link>
-                    </div>
-                    <div className="relative">
-                      <input
-                        {...register('password')}
-                        id="password-pro"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="current-password"
-                        required
-                        className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200 bg-slate-50 focus:bg-white placeholder-slate-400 text-black"
-                        placeholder="Enter your password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-4 flex items-center"
-                      >
-                        <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          {showPassword ? (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                          ) : (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          )}
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center">
-                    <input
-                      id="remember-me-pro"
-                      name="remember-me-pro"
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-slate-300 rounded"
-                    />
-                    <label htmlFor="remember-me-pro" className="ml-2 block text-sm text-slate-700">
-                      Remember me
-                    </label>
-                  </div>
-
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-700 text-sm">{error}</p>
-                    </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    {...register('email')}
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-slate-50 focus:bg-white placeholder-slate-400 text-black"
+                    placeholder="Enter your email address"
+                  />
+                  {errors.email && (
+                    <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
                   )}
+                </div>
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-teal-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? 'Signing in...' : 'Sign In as Professional'}
-                  </button>
-                </form>
-              </div>
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
+                      Password
+                    </label>
+                    <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800 transition-colors">
+                      Forgot Password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <input
+                      {...register('password')}
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      required
+                      className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-slate-50 focus:bg-white placeholder-slate-400 text-black"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                    >
+                      <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {showPassword ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                        ) : (
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        )}
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-red-600 text-sm mt-1">{errors.password.message}</p>
+                  )}
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                  />
+                  <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
+                    Remember me
+                  </label>
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !userType}
+                  className="w-full bg-gradient-to-r from-blue-500 to-teal-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-teal-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Signing in...' : `Sign In as ${userType ? userType.charAt(0).toUpperCase() + userType.slice(1).replace('_', ' ') : 'User'}`}
+                </button>
+              </form>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
