@@ -58,6 +58,8 @@ export default function CompanySetupPage() {
   const [newCertification, setNewCertification] = useState("");
   const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   // Wait for user to load
   useEffect(() => {
@@ -70,10 +72,10 @@ export default function CompanySetupPage() {
 
     const loadCompanyData = async () => {
       try {
-        const response = await api.get("/companies/my/company");
-        if (response.data) {
+        const response = await api.get("/professional-companies");
+        if (response.data && response.data.length > 0) {
           setIsEditMode(true);
-          const d = response.data;
+          const d = response.data[0]; // Get first company
           setCompany({
             _id: d._id || "",
             name: d.name || "",
@@ -110,20 +112,62 @@ export default function CompanySetupPage() {
 
     try {
       const { _id, ...companyFields } = company as any;
-      const payload = {
-        ...companyFields,
-        portfolioImages
-      };
 
       let savedCompany;
-      if (isEditMode) {
-        const response = await api.put("/companies/my/company", { ...company, portfolioImages });
-        savedCompany = response.data;
-        alert("Company profile updated successfully!");
+      if (logoFile) {
+        // Use FormData for file uploads
+        const formData = new FormData();
+        Object.keys(companyFields).forEach(key => {
+          if (key === 'services' || key === 'specializations' || key === 'certifications') {
+            formData.append(key, JSON.stringify(companyFields[key]));
+          } else {
+            formData.append(key, companyFields[key]);
+          }
+        });
+        formData.append('portfolioImages', JSON.stringify(portfolioImages));
+        formData.append('logo', logoFile);
+
+        if (isEditMode) {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/professional-companies/${company._id}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+          });
+          if (!response.ok) throw new Error(`Error ${response.status}`);
+          const result = await response.json();
+          savedCompany = result.company;
+          alert("Company profile updated successfully!");
+        } else {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/professional-companies`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+          });
+          if (!response.ok) throw new Error(`Error ${response.status}`);
+          const result = await response.json();
+          savedCompany = result.company;
+          alert("Company profile created successfully!");
+        }
       } else {
-        const response = await api.post("/companies", payload);
-        savedCompany = response.data;
-        alert("Company profile created successfully!");
+        // Use JSON for non-file uploads
+        const payload = {
+          ...companyFields,
+          portfolioImages
+        };
+
+        if (isEditMode) {
+          const response = await api.put(`/professional-companies/${company._id}`, payload);
+          savedCompany = response.data.company;
+          alert("Company profile updated successfully!");
+        } else {
+          const response = await api.post("/professional-companies", payload);
+          savedCompany = response.data.company;
+          alert("Company profile created successfully!");
+        }
       }
 
       const id = savedCompany?._id || company._id;
@@ -146,7 +190,7 @@ export default function CompanySetupPage() {
     if (!confirm("Are you sure you want to delete your company profile? This action cannot be undone.")) return;
 
     try {
-      await api.delete("/companies/my/company");
+      await api.delete(`/professional-companies/${company._id}`);
       alert("Company profile deleted successfully!");
       router.push("/dashboard");
     } catch (error: any) {
@@ -326,6 +370,28 @@ export default function CompanySetupPage() {
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Company Description *</label>
                 <textarea required rows={4} value={company.description} onChange={(e) => setCompany(prev => ({ ...prev, description: e.target.value }))} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-black" placeholder="Describe your company, expertise, and what makes you unique..." />
+              </div>
+
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+                <div className="flex items-center gap-4">
+                  {logoUrl && (
+                    <img src={logoUrl} alt="Company Logo" className="w-16 h-16 object-cover rounded-lg border" />
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setLogoFile(file);
+                        setLogoUrl(URL.createObjectURL(file));
+                      }
+                    }}
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-1">Upload a logo for your company (optional, max 5MB)</p>
               </div>
 
               <div className="mt-6">
