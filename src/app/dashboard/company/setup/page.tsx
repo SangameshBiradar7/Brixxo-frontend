@@ -128,28 +128,12 @@ export default function CompanySetupPage() {
         formData.append('logo', logoFile);
 
         if (isEditMode) {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/professional-companies/${company._id}`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: formData
-          });
-          if (!response.ok) throw new Error(`Error ${response.status}`);
-          const result = await response.json();
-          savedCompany = result.company;
+          const response = await api.upload(`/professional-companies/${company._id}`, formData);
+          savedCompany = response.data.company;
           alert("Company profile updated successfully!");
         } else {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/professional-companies`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: formData
-          });
-          if (!response.ok) throw new Error(`Error ${response.status}`);
-          const result = await response.json();
-          savedCompany = result.company;
+          const response = await api.upload("/professional-companies", formData);
+          savedCompany = response.data.company;
           alert("Company profile created successfully!");
         }
       } else {
