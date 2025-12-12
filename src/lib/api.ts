@@ -4,10 +4,9 @@ const getBackendUrl = () => {
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 };
 
+//build url for api endpoint
 const buildUrl = (endpoint: string) => {
-  // Don't add /api prefix if endpoint already starts with /auth
-  const prefix = endpoint.startsWith('/auth') ? '' : '/api';
-  return `${getBackendUrl().replace(/\/$/, "")}${prefix}${endpoint}`;
+  return `${getBackendUrl().replace(/\/$/, "")}/api${endpoint}`;
 };
 
 const getAuthHeaders = (): Record<string, string> => {
