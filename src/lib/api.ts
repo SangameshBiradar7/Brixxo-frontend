@@ -5,8 +5,13 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // Build full URL safely
 const buildUrl = (endpoint: string) => {
-  return `${API_BASE.replace(/\/$/, "")}${endpoint.startsWith("/auth") ? "" : "/api"}${endpoint}`;
+  // Ensure endpoint starts with /
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : "/" + endpoint;
+
+  // Always prepend /api to all endpoints
+  return `${API_BASE.replace(/\/$/, "")}/api${cleanEndpoint}`;
 };
+
 
 // Get authentication headers (if token exists)
 const getAuthHeaders = (): Record<string, string> => {
