@@ -53,6 +53,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // --- INITIALIZATION ---
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const backendUrl =
       process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ||
       'http://localhost:5000';
@@ -117,7 +119,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string): Promise<User> => {
     const data = await api.post('/auth/login', { email, password });
 
-    localStorage.setItem('token', data.token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', data.token);
+    }
     setUser(data.user);
 
     return data.user;
@@ -139,13 +143,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       phone,
     });
 
-    localStorage.setItem('token', data.token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', data.token);
+    }
     setUser(data.user);
   };
 
   // --- LOGOUT FUNCTION ---
   const logout = () => {
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+    }
     setUser(null);
     socket?.disconnect();
   };

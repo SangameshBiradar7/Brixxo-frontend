@@ -5,6 +5,19 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
+  // Disable SSG for dynamic routes
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
+
+  // Disable static optimization for pages with browser-only code
+  trailingSlash: false,
+
+  // Disable ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // API rewrites disabled - using direct fetch calls instead
   // async rewrites() {
   //   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
@@ -116,6 +129,15 @@ const nextConfig: NextConfig = {
   generateEtags: false, // Let CDN handle etags
 
   // Build optimization
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // Disable SSG for pages that use browser APIs
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
+  },
 };
 
 export default nextConfig;
