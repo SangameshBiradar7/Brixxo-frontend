@@ -61,7 +61,7 @@ function UserRegisterForm() {
       router.push('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
-      if (errorMessage === 'User already exists') {
+      if (errorMessage.toLowerCase().includes('already exists') || errorMessage.toLowerCase().includes('user already')) {
         alert('User already exists. Please sign in instead.');
         router.push('/login');
       } else {

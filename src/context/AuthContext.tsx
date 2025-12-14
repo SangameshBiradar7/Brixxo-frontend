@@ -25,14 +25,12 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   socket: Socket | null;
-  login: (email: string, password: string) => Promise<User>;
-  register: (
-    name: string,
-    email: string,
-    password: string,
-    role: string,
-    phone?: string
-  ) => Promise<void>;
+  sendOTP: (data: { email?: string; phone?: string; name?: string }) => Promise<void>;
+  verifyOTP: (data: { email?: string; phone?: string; otp: string; name?: string; role?: string }) => Promise<User>;
+  loginOTP: (data: { email?: string; phone?: string }) => Promise<void>;
+  verifyLoginOTP: (data: { email?: string; phone?: string; otp: string }) => Promise<User>;
+  forgotPassword: (data: { email?: string; phone?: string }) => Promise<void>;
+  resetPassword: (data: { email?: string; phone?: string; otp: string; newPassword: string }) => Promise<void>;
   logout: () => void;
 }
 
@@ -115,38 +113,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // --- LOGIN FUNCTION ---
-  const login = async (email: string, password: string): Promise<User> => {
-    const data = await api.post('/auth/login', { email, password });
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', data.token);
-    }
-    setUser(data.user);
-
-    return data.user;
+  // --- OTP FUNCTIONS ---
+  const sendOTP = async (data: { email?: string; phone?: string; name?: string }) => {
+    await api.post('/auth/send-otp', data);
   };
 
-  // --- REGISTER FUNCTION ---
-  const register = async (
-    name: string,
-    email: string,
-    password: string,
-    role: string,
-    phone?: string
-  ) => {
-    const data = await api.post('/auth/register', {
-      name,
-      email,
-      password,
-      role,
-      phone,
-    });
-
+  const verifyOTP = async (data: { email?: string; phone?: string; otp: string; name?: string; role?: string }): Promise<User> => {
+    const response = await api.post('/auth/verify-otp', data);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('token', response.token);
     }
-    setUser(data.user);
+    setUser(response.user);
+    return response.user;
+  };
+
+  const loginOTP = async (data: { email?: string; phone?: string }) => {
+    await api.post('/auth/login-otp', data);
+  };
+
+  const verifyLoginOTP = async (data: { email?: string; phone?: string; otp: string }): Promise<User> => {
+    const response = await api.post('/auth/verify-login-otp', data);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', response.token);
+    }
+    setUser(response.user);
+    return response.user;
+  };
+
+  const forgotPassword = async (data: { email?: string; phone?: string }) => {
+    await api.post('/auth/forgot-password', data);
+  };
+
+  const resetPassword = async (data: { email?: string; phone?: string; otp: string; newPassword: string }) => {
+    await api.post('/auth/reset-password', data);
   };
 
   // --- LOGOUT FUNCTION ---
@@ -164,8 +163,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         loading,
         socket,
-        login,
-        register,
+        sendOTP,
+        verifyOTP,
+        loginOTP,
+        verifyLoginOTP,
+        forgotPassword,
+        resetPassword,
         logout,
       }}
     >
