@@ -20,6 +20,12 @@ const schema = yup.object({
 });
 
 export default function UserRegisterPage() {
+  return (
+    <UserRegisterForm />
+  );
+}
+
+function UserRegisterForm() {
   const { register: registerUser, user } = useAuth();
   const router = useRouter();
   const [error, setError] = useState('');
@@ -356,5 +362,15 @@ export default function UserRegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+import { Suspense } from 'react';
+
+export default function UserRegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <UserRegisterForm />
+    </Suspense>
   );
 }

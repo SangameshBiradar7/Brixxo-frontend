@@ -21,7 +21,7 @@ const professionalSignupSchema = yup.object({
   terms: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-function ProfessionalSignupPage() {
+function ProfessionalSignupForm() {
   const { register: registerUser } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -33,6 +33,9 @@ function ProfessionalSignupPage() {
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     resolver: yupResolver(professionalSignupSchema),
+    defaultValues: {
+      professionType: 'contractor'
+    }
   });
 
   const password = watch('password', '');
@@ -374,10 +377,10 @@ function ProfessionalSignupPage() {
   );
 }
 
-export default function ProfessionalSignupPageWrapper() {
+export default function ProfessionalSignupPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProfessionalSignupPage />
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <ProfessionalSignupForm />
     </Suspense>
   );
 }
