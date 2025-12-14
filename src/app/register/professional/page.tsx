@@ -61,10 +61,15 @@ function ProfessionalSignupPage() {
     setError('');
 
     try {
-      await registerUser(data.name, data.email, data.password, data.professionType);
+      await registerUser(data.name, data.email, data.password, data.professionType, data.phone);
       router.push('/dashboard/professional');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const errorMessage = err.response?.data?.message || 'Registration failed';
+      if (errorMessage === 'User already exists') {
+        router.push('/login?message=user-exists');
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

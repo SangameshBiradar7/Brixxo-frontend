@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Navigation from '@/components/Navigation';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 const schema = yup.object({
@@ -15,14 +15,30 @@ const schema = yup.object({
 });
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState('');
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
+
+  // Check for message query parameter
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message === 'user-exists') {
+      setError('User already exists. Please sign in with your existing account.');
+    }
+  }, [searchParams]);
+
+  // Redirect authenticated users to home
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
 
   const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true);
@@ -224,7 +240,7 @@ export default function LoginPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Link
-                  href="/register/role-selection"
+                  href="/register/user"
                   className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   Sign Up as Homeowner

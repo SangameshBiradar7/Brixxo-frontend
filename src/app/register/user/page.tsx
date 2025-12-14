@@ -47,10 +47,15 @@ export default function UserRegisterPage() {
     setLoading(true);
     setError('');
     try {
-      await registerUser(data.name, data.email, data.password, data.role);
+      await registerUser(data.name, data.email, data.password, data.role, data.phone);
       // User will be set in context, redirection will happen in useEffect
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const errorMessage = err.response?.data?.message || 'Registration failed';
+      if (errorMessage === 'User already exists') {
+        router.push('/login?message=user-exists');
+      } else {
+        setError(errorMessage);
+      }
       setLoading(false);
     }
   };

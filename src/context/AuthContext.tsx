@@ -30,7 +30,8 @@ interface AuthContextType {
     name: string,
     email: string,
     password: string,
-    role: string
+    role: string,
+    phone?: string
   ) => Promise<void>;
   logout: () => void;
 }
@@ -127,13 +128,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     name: string,
     email: string,
     password: string,
-    role: string
+    role: string,
+    phone?: string
   ) => {
     const data = await api.post('/auth/register', {
       name,
       email,
       password,
       role,
+      phone,
     });
 
     localStorage.setItem('token', data.token);
