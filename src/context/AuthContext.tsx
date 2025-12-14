@@ -26,6 +26,7 @@ interface AuthContextType {
   loading: boolean;
   socket: Socket | null;
   login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, role: string, phone?: string) => Promise<void>;
   sendOTP: (data: { email?: string; phone?: string; name?: string }) => Promise<void>;
   verifyOTP: (data: { email?: string; phone?: string; otp: string; name?: string; role?: string }) => Promise<User>;
   loginOTP: (data: { email?: string; phone?: string }) => Promise<void>;
@@ -126,6 +127,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return data.user;
   };
 
+  // --- REGISTER FUNCTION ---
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    role: string,
+    phone?: string
+  ) => {
+    const data = await api.post('/auth/register', {
+      name,
+      email,
+      password,
+      role,
+      phone,
+    });
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', data.token);
+    }
+    setUser(data.user);
+  };
+
   // --- OTP FUNCTIONS ---
   const sendOTP = async (data: { email?: string; phone?: string; name?: string }) => {
     await api.post('/auth/send-otp', data);
@@ -177,6 +200,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         socket,
         login,
+        register,
         sendOTP,
         verifyOTP,
         loginOTP,
