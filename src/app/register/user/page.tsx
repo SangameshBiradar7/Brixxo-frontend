@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -26,7 +26,7 @@ function UserRegisterPageWrapper() {
 }
 
 function UserRegisterForm() {
-  const { register: registerUser, user } = useAuth();
+  const { register: registerUser } = useAuth();
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -57,11 +57,13 @@ function UserRegisterForm() {
     setError('');
     try {
       await registerUser(data.name, data.email, data.password, data.role, data.phone);
-      // User will be set in context, redirection will happen in useEffect
+      // Redirect immediately after successful registration
+      router.push('/dashboard');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       if (errorMessage === 'User already exists') {
-        router.push('/login?message=user-exists');
+        alert('User already exists. Please sign in instead.');
+        router.push('/login');
       } else {
         setError(errorMessage);
       }
@@ -69,18 +71,6 @@ function UserRegisterForm() {
     }
   };
 
-  // Handle redirection after user is set in context
-  useEffect(() => {
-    if (user && !loading) {
-      if (user.role === 'homeowner') {
-        router.push('/dashboard');
-      } else if (['contractor', 'architect', 'interior-designer', 'renovator', 'structural-engineer', 'estimation-engineer', 'professional', 'company_admin'].includes(user.role)) {
-        router.push('/dashboard/professional');
-      } else {
-        router.push('/dashboard');
-      }
-    }
-  }, [user, loading, router]);
 
   return (
     <div className="min-h-screen bg-white">

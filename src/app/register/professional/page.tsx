@@ -65,11 +65,13 @@ function ProfessionalSignupForm() {
 
     try {
       await registerUser(data.name, data.email, data.password, data.professionType, data.phone);
+      // Redirect immediately after successful registration
       router.push('/dashboard/professional');
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       if (errorMessage === 'User already exists') {
-        router.push('/login?message=user-exists');
+        alert('User already exists. Please sign in instead.');
+        router.push('/login');
       } else {
         setError(errorMessage);
       }
