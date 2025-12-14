@@ -29,6 +29,9 @@ export default function UserRegisterPage() {
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      role: 'homeowner'
+    }
   });
 
   const password = watch('password', '');
