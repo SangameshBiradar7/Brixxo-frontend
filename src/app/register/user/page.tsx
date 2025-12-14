@@ -19,7 +19,7 @@ const schema = yup.object({
   terms: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-export default function UserRegisterPage() {
+function UserRegisterPageWrapper() {
   return (
     <UserRegisterForm />
   );
