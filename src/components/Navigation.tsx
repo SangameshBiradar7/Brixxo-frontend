@@ -35,9 +35,11 @@ export default function Navigation() {
   }, [isProfileDropdownOpen]);
 
   const handleLogout = () => {
-    logout();
-    router.push('/');
-    setIsMenuOpen(false);
+    if (confirm('Are you sure you want to logout?')) {
+      logout();
+      router.push('/');
+      setIsMenuOpen(false);
+    }
   };
 
   const closeMenu = () => setIsMenuOpen(false);
