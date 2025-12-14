@@ -10,12 +10,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 const schema = yup.object({
-  email: yup.string().email('Invalid email').required('Email is required'),
-  password: yup.string().required('Password is required'),
+  contact: yup.string().required('Email or phone is required'),
+  otp: yup.string().when('step', {
+    is: 'verify',
+    then: yup.string().required('OTP is required').length(6, 'OTP must be 6 digits'),
+  }),
 });
 
 function LoginForm() {
-  const { login, user } = useAuth();
+  const { loginOTP, verifyLoginOTP, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
