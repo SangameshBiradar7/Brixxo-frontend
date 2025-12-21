@@ -117,13 +117,26 @@ export default function ProjectManagement() {
   const loadData = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
 
       // Load companies first
-      const companiesResponse = await axios.get('/api/professional-companies');
+      const companiesResponse = await axios.get('/api/professional-companies', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setCompanies(companiesResponse.data);
 
       // Load projects
-      const projectsResponse = await axios.get('/api/professional-projects');
+      const projectsResponse = await axios.get('/api/professional-projects', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setProjects(projectsResponse.data);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -208,6 +221,12 @@ export default function ProjectManagement() {
     setSaving(true);
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login again');
+        return;
+      }
+
       const submitData = new FormData();
 
       // Add all form fields
@@ -226,19 +245,20 @@ export default function ProjectManagement() {
         submitData.append('images', file);
       });
 
+      const headers = {
+        'Authorization': `Bearer ${token}`
+        // Note: Don't set Content-Type for FormData, let browser set it
+      };
+
       if (editingProject) {
         // Update existing project
         await axios.put(`/api/professional-projects/${editingProject._id}`, submitData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers
         });
       } else {
         // Create new project
         await axios.post('/api/professional-projects', submitData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers
         });
       }
 
@@ -284,7 +304,17 @@ export default function ProjectManagement() {
     }
 
     try {
-      await axios.delete(`/api/professional-projects/${projectId}`);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login again');
+        return;
+      }
+
+      await axios.delete(`/api/professional-projects/${projectId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       loadData();
     } catch (error) {
       console.error('Error deleting project:', error);
@@ -294,7 +324,17 @@ export default function ProjectManagement() {
 
   const toggleFeatured = async (projectId: string) => {
     try {
-      await axios.put(`/api/professional-projects/${projectId}/feature`);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      await axios.put(`/api/professional-projects/${projectId}/feature`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       loadData();
     } catch (error) {
       console.error('Error toggling featured status:', error);
