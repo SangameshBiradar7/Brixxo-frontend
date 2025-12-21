@@ -127,7 +127,6 @@ const nextConfig: NextConfig = {
   generateEtags: false, // Let CDN handle etags
 
   // Build optimization
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

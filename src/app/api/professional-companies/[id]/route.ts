@@ -4,12 +4,13 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
+    const { id } = await params;
 
-    const response = await fetch(`${API_BASE}/api/professional-companies/${params.id}`, {
+    const response = await fetch(`${API_BASE}/api/professional-companies/${id}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(authHeader && { 'Authorization': authHeader }),
@@ -36,13 +37,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
     const formData = await request.formData();
+    const { id } = await params;
 
-    const response = await fetch(`${API_BASE}/api/professional-companies/${params.id}`, {
+    const response = await fetch(`${API_BASE}/api/professional-companies/${id}`, {
       method: 'PUT',
       headers: {
         ...(authHeader && { 'Authorization': authHeader }),
@@ -71,12 +73,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
+    const { id } = await params;
 
-    const response = await fetch(`${API_BASE}/api/professional-companies/${params.id}`, {
+    const response = await fetch(`${API_BASE}/api/professional-companies/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
