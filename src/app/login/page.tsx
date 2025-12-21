@@ -237,18 +237,12 @@ function LoginForm() {
                 <p className="text-slate-600 text-sm">Join our community today</p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <Link
-                  href="/register/user"
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                  href="/register"
+                  className="bg-gradient-to-r from-blue-500 to-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-600 hover:to-teal-700 transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
-                  Sign Up as Homeowner
-                </Link>
-                <Link
-                  href="/register/professional"
-                  className="bg-gradient-to-r from-teal-500 to-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-teal-600 hover:to-teal-700 transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  Sign Up as Professional
+                  Sign Up Now
                 </Link>
               </div>
 
