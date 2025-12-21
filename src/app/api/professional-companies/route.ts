@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorData = await response.text();
       return NextResponse.json(
-        { error: errorData || 'Failed to create company' },
+        { success: false, message: errorData || 'Failed to create company' },
         { status: response.status }
       );
     }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('API route error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, message: 'Internal server error' },
       { status: 500 }
     );
   }
