@@ -112,7 +112,17 @@ export default function CompanyManagement() {
   const loadCompanies = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/professional-companies');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      const response = await axios.get('/api/professional-companies', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setCompanies(response.data);
     } catch (error) {
       console.error('Error loading companies:', error);
@@ -173,6 +183,12 @@ export default function CompanyManagement() {
     setSaving(true);
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login again');
+        return;
+      }
+
       const submitData = new FormData();
 
       // Add all form fields
@@ -189,19 +205,20 @@ export default function CompanyManagement() {
         submitData.append('logo', selectedFile);
       }
 
+      const headers = {
+        'Authorization': `Bearer ${token}`
+        // Note: Don't set Content-Type for FormData, let browser set it
+      };
+
       if (editingCompany) {
         // Update existing company
         await axios.put(`/api/professional-companies/${editingCompany._id}`, submitData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers
         });
       } else {
         // Create new company
         await axios.post('/api/professional-companies', submitData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers
         });
       }
 
@@ -241,7 +258,17 @@ export default function CompanyManagement() {
     }
 
     try {
-      await axios.delete(`/api/professional-companies/${companyId}`);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login again');
+        return;
+      }
+
+      await axios.delete(`/api/professional-companies/${companyId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       loadCompanies();
     } catch (error) {
       console.error('Error deleting company:', error);
