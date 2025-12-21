@@ -193,7 +193,10 @@ export default function CompanyManagement() {
 
       // Add all form fields
       Object.entries(formData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
+        if (value === '' || (Array.isArray(value) && value.length === 0)) {
+          // Skip empty fields instead of appending null
+          return;
+        } else if (Array.isArray(value)) {
           submitData.append(key, JSON.stringify(value));
         } else {
           submitData.append(key, value);

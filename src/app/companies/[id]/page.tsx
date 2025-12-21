@@ -33,7 +33,7 @@ export default function CompanyDetailPage() {
   const loadCompany = async () => {
     try {
       console.log('🔄 CompanyDetailPage: Fetching company details...');
-      setLoading(true);
+      setLoading(true); 
       setError(null);
 
       const response = await fetch(`/api/professional-companies/${params.id}`, {
