@@ -51,9 +51,19 @@ function UserRegisterForm() {
   const onSubmit = async (data: any) => {
     setLoading(true);
     setError('');
+
     try {
-      await registerUser(data.name, data.email, data.password, data.role, data.phone);
-      router.push('/dashboard');
+      const user = await registerUser(data.name, data.email, data.password, data.role, data.phone);
+      // Redirect based on user role
+      if (user.role === 'admin') {
+        router.push('/admin');
+      } else if (user.role === 'homeowner') {
+        router.push('/dashboard');
+      } else if (['contractor', 'architect', 'interior-designer', 'renovator', 'structural-engineer', 'estimation-engineer', 'professional', 'company_admin'].includes(user.role)) {
+        router.push('/dashboard/professional');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       if (errorMessage.toLowerCase().includes('already exists') || errorMessage.toLowerCase().includes('user already')) {
@@ -66,7 +76,6 @@ function UserRegisterForm() {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-white">
