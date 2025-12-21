@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
     const response = await fetch(`${API_BASE}/api/professional-projects/public`, {
       headers: {
         'Content-Type': 'application/json',
-        ...(authHeader && { 'Authorization': authHeader }),
       },
     });
 

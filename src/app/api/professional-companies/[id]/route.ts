@@ -19,7 +19,6 @@ export async function GET(
     const response = await fetch(`${API_BASE}/api/professional-companies/public/${id}`, {
       headers: {
         'Content-Type': 'application/json',
-        ...(authHeader && { 'Authorization': authHeader }),
       },
     });
 
