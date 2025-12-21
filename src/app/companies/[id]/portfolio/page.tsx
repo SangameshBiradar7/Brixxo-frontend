@@ -16,6 +16,7 @@ interface Project {
   featuredImage?: string;
   isFeatured: boolean;
   isPublic: boolean;
+  tags: string[];
   company: {
     _id: string;
     name: string;
