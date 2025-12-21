@@ -7,17 +7,16 @@ import { api } from '@/lib/api';
 interface Project {
   _id: string;
   title: string;
-  description?: string;
-  location?: string;
-  status?: string;
-  rating?: number;
+  description: string;
+  projectType: string;
+  status: string;
   images: string[];
-  company?: {
+  isFeatured: boolean;
+  company: {
+    _id: string;
     name: string;
   };
-  professional?: {
-    name: string;
-  };
+  createdAt: string;
 }
 
 type TabType = 'newest' | 'topRated';
@@ -35,10 +34,10 @@ export default function ProjectShowcase() {
       setLoading(true);
       setError(null);
 
-      // Fetch both newest and top-rated projects
+      // Fetch both newest and top-rated professional projects
       const [newestData, topRatedData] = await Promise.all([
-        api.get('/projects?limit=6&sortBy=newest'),
-        api.get('/projects?limit=6&sortBy=rating')
+        api.get('/professional-projects?limit=6&sortBy=newest'),
+        api.get('/professional-projects?limit=6&sortBy=rating')
       ]);
 
       console.log('✅ ProjectShowcase: Received newest projects:', newestData);
@@ -239,33 +238,32 @@ export default function ProjectShowcase() {
                 </h3>
                 <div className="flex items-center mb-2">
                   <span className="text-gray-600 font-medium">
-                    {project.company?.name || project.professional?.name || 'Our Partner'}
+                    {project.company.name}
                   </span>
                 </div>
-                {project.location && (
-                  <div className="flex items-center mb-3">
-                    <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-gray-600 text-sm">{project.location}</span>
-                  </div>
-                )}
-                {project.description && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
-                )}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className={`text-sm ${i < Math.floor(project.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                        ★
-                      </span>
-                    ))}
-                    <span className="ml-2 text-gray-600 text-sm">
-                      {project.rating || 0}
+                <div className="flex items-center mb-3">
+                  <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${
+                    project.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    project.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {project.status.replace('-', ' ')}
+                  </span>
+                  {project.isFeatured && (
+                    <span className="ml-2 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
+                      Featured
                     </span>
+                  )}
+                </div>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  {project.description}
+                </p>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center text-gray-500 text-xs">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {new Date(project.createdAt).toLocaleDateString()}
                   </div>
                 </div>
                 <Link
@@ -312,33 +310,32 @@ export default function ProjectShowcase() {
                   </h3>
                   <div className="flex items-center mb-2">
                     <span className="text-gray-600 font-medium">
-                      {project.company?.name || project.professional?.name || 'Our Partner'}
+                      {project.company.name}
                     </span>
                   </div>
-                  {project.location && (
-                    <div className="flex items-center mb-3">
-                      <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span className="text-gray-600 text-sm">{project.location}</span>
-                    </div>
-                  )}
-                  {project.description && (
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {project.description}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`text-sm ${i < Math.floor(project.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                          ★
-                        </span>
-                      ))}
-                      <span className="ml-2 text-gray-600 text-sm">
-                        {project.rating || 0}
+                  <div className="flex items-center mb-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${
+                      project.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      project.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {project.status.replace('-', ' ')}
+                    </span>
+                    {project.isFeatured && (
+                      <span className="ml-2 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
+                        Featured
                       </span>
+                    )}
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {project.description}
+                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center text-gray-500 text-xs">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {new Date(project.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                   <Link

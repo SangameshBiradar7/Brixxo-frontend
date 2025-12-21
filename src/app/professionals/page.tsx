@@ -9,38 +9,24 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import ModernSearch from '@/components/ModernSearch';
 
-// Interface for Professional data from backend API
-interface Professional {
+// Interface for Company data from backend API
+interface Company {
   _id: string;
   name: string;
-  email: string;
   description?: string;
   logo?: string;
   website?: string;
   phone?: string;
   address?: string;
   services: string[];
-  specialties: string[];
-  portfolio: any[];
+  specializations: string[];
+  certifications: string[];
+  established?: string;
+  employees?: string;
   rating: number;
-  reviewCount: number;
-  user: string;
   isVerified: boolean;
-  license?: string;
-  insurance?: string;
-  location?: {
-    city: string;
-    state: string;
-    zipCode: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    };
-  };
-  businessHours?: any;
   createdAt: string;
   updatedAt: string;
-  tagline?: string; // Add tagline for quotes
 }
 
 interface SearchFilters {
@@ -89,8 +75,8 @@ export default function ProfessionalsPageWrapper() {
 function ProfessionalsPage() {
   const { user, socket } = useAuth();
   const searchParams = useSearchParams();
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [filteredProfessionals, setFilteredProfessionals] = useState<Professional[]>([]);
+  const [professionals, setProfessionals] = useState<Company[]>([]);
+  const [filteredProfessionals, setFilteredProfessionals] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentQuote, setCurrentQuote] = useState(0);
@@ -135,15 +121,14 @@ function ProfessionalsPage() {
     return () => clearInterval(interval);
   }, [quotes.length]);
 
-  // Load professionals from backend API
+  // Load companies from backend API
   const loadProfessionals = async () => {
     try {
-      console.log('🔄 ProfessionalsPage: Fetching professionals from API...');
+      console.log('🔄 ProfessionalsPage: Fetching companies from API...');
       setLoading(true);
       setError(null);
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${backendUrl}/api/professionals`, {
+      const response = await fetch('/api/companies', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -155,12 +140,12 @@ function ProfessionalsPage() {
       }
 
       const data = await response.json();
-      console.log('✅ ProfessionalsPage: Received professionals data:', data);
+      console.log('✅ ProfessionalsPage: Received companies data:', data);
 
       setProfessionals(data || []);
     } catch (err) {
-      console.error('❌ ProfessionalsPage: Error loading professionals:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load professionals';
+      console.error('❌ ProfessionalsPage: Error loading companies:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load companies';
       setError(errorMessage);
       setProfessionals([]);
     } finally {
@@ -188,7 +173,7 @@ function ProfessionalsPage() {
 
       const keywords = categoryKeywords[activeCategory as keyof typeof categoryKeywords] || [];
       filtered = filtered.filter(professional =>
-        professional.specialties.some(specialty =>
+        professional.specializations.some(specialty =>
           keywords.some(keyword =>
             specialty.toLowerCase().includes(keyword.toLowerCase())
           )
@@ -206,7 +191,7 @@ function ProfessionalsPage() {
       filtered = filtered.filter(professional =>
         professional.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (professional.description && professional.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        professional.specialties.some(specialty =>
+        professional.specializations.some(specialty =>
           specialty.toLowerCase().includes(searchQuery.toLowerCase())
         ) ||
         professional.services.some(service =>
@@ -215,13 +200,18 @@ function ProfessionalsPage() {
       );
     }
 
-    // Sort professionals
+    // Sort companies
     switch (sortBy) {
       case 'rating':
         filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case 'experience':
-        filtered.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
+        // Sort by established year (older companies first)
+        filtered.sort((a, b) => {
+          const aYear = a.established ? parseInt(a.established) : 2024;
+          const bYear = b.established ? parseInt(b.established) : 2024;
+          return aYear - bYear;
+        });
         break;
       case 'newest':
         filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -589,20 +579,20 @@ function ProfessionalsPage() {
                               {professional.name}
                             </h3>
                             <p className="text-slate-600 text-sm font-medium">
-                              {professional.specialties[0] || 'Professional Service'}
+                              {professional.specializations[0] || 'Construction Company'}
                             </p>
                           </div>
 
-                          {/* Specialties */}
+                          {/* Specializations */}
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {professional.specialties.slice(0, 2).map((specialty, idx) => (
+                            {professional.specializations.slice(0, 2).map((specialty: string, idx: number) => (
                               <span key={idx} className="bg-teal-50 text-teal-700 text-xs px-3 py-1 rounded-full font-medium border border-teal-100 group-hover:bg-teal-100 transition-colors">
                                 {specialty}
                               </span>
                             ))}
-                            {professional.specialties.length > 2 && (
+                            {professional.specializations.length > 2 && (
                               <span className="text-xs text-slate-500 font-medium">
-                                +{professional.specialties.length - 2} more
+                                +{professional.specializations.length - 2} more
                               </span>
                             )}
                           </div>
@@ -616,20 +606,20 @@ function ProfessionalsPage() {
 
                           {/* Location & Experience */}
                           <div className="flex items-center justify-between text-slate-500 text-sm mb-6">
-                            {professional.location && (
+                            {professional.address && (
                               <div className="flex items-center">
                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                {professional.location.city}
+                                {professional.address}
                               </div>
                             )}
                             <div className="flex items-center">
                               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
-                              {professional.reviewCount || 0} projects
+                              {professional.established ? `${new Date().getFullYear() - parseInt(professional.established)} years` : 'New Company'}
                             </div>
                           </div>
 

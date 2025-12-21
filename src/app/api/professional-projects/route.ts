@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
 
-    const response = await fetch(`${API_BASE}/api/professional-projects`, {
+    const response = await fetch(`${API_BASE}/api/professional-projects/public`, {
       headers: {
         'Content-Type': 'application/json',
         ...(authHeader && { 'Authorization': authHeader }),
@@ -34,15 +40,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const formData = await request.formData();
 
     const response = await fetch(`${API_BASE}/api/professional-projects`, {
       method: 'POST',
       headers: {
         ...(authHeader && { 'Authorization': authHeader }),
       },
-      body: formData,
-    });
+      body: request.body,
+      duplex: 'half',
+    } as any);
 
     if (!response.ok) {
       const errorData = await response.text();

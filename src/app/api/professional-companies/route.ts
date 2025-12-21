@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -34,15 +40,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const formData = await request.formData();
 
+    // Forward the request directly to the backend
     const response = await fetch(`${API_BASE}/api/professional-companies`, {
       method: 'POST',
       headers: {
         ...(authHeader && { 'Authorization': authHeader }),
+        // Let the browser set Content-Type for FormData
       },
-      body: formData,
-    });
+      body: request.body,
+      duplex: 'half',
+    } as any);
 
     if (!response.ok) {
       const errorData = await response.text();
