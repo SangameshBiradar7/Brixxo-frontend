@@ -5,10 +5,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
-  // Disable SSG for dynamic routes
-  experimental: {
-    serverComponentsExternalPackages: [],
-  },
+  // External packages for server components
+  serverExternalPackages: ["mongoose"],
 
   // Disable static optimization for pages with browser-only code
   trailingSlash: false,
