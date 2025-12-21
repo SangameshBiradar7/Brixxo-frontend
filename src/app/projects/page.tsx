@@ -71,7 +71,7 @@ export default function ProjectsPage() {
       setError(null);
 
       // Fetch professional projects from backend API
-      const data = await api.get('/professional-projects');
+      const data = await api.get('/projects');
       console.log('✅ ProjectsPage: Received professional projects data:', data);
 
       // Validate and set project data

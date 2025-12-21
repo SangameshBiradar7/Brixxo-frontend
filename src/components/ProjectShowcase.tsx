@@ -35,16 +35,23 @@ export default function ProjectShowcase() {
       setError(null);
 
       // Fetch both newest and top-rated professional projects
-      const [newestData, topRatedData] = await Promise.all([
-        api.get('/professional-projects?limit=6&sortBy=newest'),
-        api.get('/professional-projects?limit=6&sortBy=rating')
+      const [newestResponse, topRatedResponse] = await Promise.all([
+        fetch('/api/projects?limit=6&sortBy=createdAt&sortOrder=-1'),
+        fetch('/api/projects?limit=6&sortBy=createdAt&sortOrder=-1') // For now, using createdAt as proxy for rating
       ]);
+
+      if (!newestResponse.ok || !topRatedResponse.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+
+      const newestData = await newestResponse.json();
+      const topRatedData = await topRatedResponse.json();
 
       console.log('✅ ProjectShowcase: Received newest projects:', newestData);
       console.log('✅ ProjectShowcase: Received top-rated projects:', topRatedData);
 
-      setNewestProjects(newestData.projects || []);
-      setTopRatedProjects(topRatedData.projects || []);
+      setNewestProjects(newestData || []);
+      setTopRatedProjects(topRatedData || []);
     } catch (error) {
       console.error('❌ ProjectShowcase: Error fetching projects:', error);
       setError(error instanceof Error ? error.message : 'Failed to load projects');

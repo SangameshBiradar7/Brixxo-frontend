@@ -84,12 +84,16 @@ export default function PortfolioShowcase() {
       setLoading(true);
 
       // Load companies
-      const companiesResponse = await axios.get('/api/professional-companies');
-      setCompanies(companiesResponse.data);
+      const companiesResponse = await fetch('/api/companies');
+      if (!companiesResponse.ok) throw new Error('Failed to load companies');
+      const companiesData = await companiesResponse.json();
+      setCompanies(companiesData);
 
       // Load projects
-      const projectsResponse = await axios.get('/api/professional-projects');
-      setProjects(projectsResponse.data);
+      const projectsResponse = await fetch('/api/projects');
+      if (!projectsResponse.ok) throw new Error('Failed to load projects');
+      const projectsData = await projectsResponse.json();
+      setProjects(projectsData);
     } catch (error) {
       console.error('Error loading portfolio data:', error);
     } finally {

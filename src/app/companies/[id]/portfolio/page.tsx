@@ -46,7 +46,7 @@ export default function CompanyPortfolioPage() {
       setError(null);
 
       // Fetch company details
-      const companyResponse = await fetch(`/api/professional-companies/${params.id}`);
+      const companyResponse = await fetch(`/api/companies/${params.id}`);
       if (!companyResponse.ok) {
         throw new Error('Failed to load company');
       }
@@ -54,12 +54,7 @@ export default function CompanyPortfolioPage() {
       setCompany(companyData);
 
       // Fetch company's projects
-      const projectsResponse = await fetch('/api/professional-projects', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
+      const projectsResponse = await fetch(`/api/professional-projects/public/${params.id}`);
       if (!projectsResponse.ok) {
         throw new Error('Failed to load projects');
       }
@@ -67,12 +62,7 @@ export default function CompanyPortfolioPage() {
       const projectsData = await projectsResponse.json();
       console.log('✅ CompanyPortfolioPage: Received projects data:', projectsData);
 
-      // Filter projects by company ID
-      const companyProjects = projectsData.filter((project: Project) =>
-        project.company && project.company._id === params.id
-      );
-
-      setProjects(companyProjects);
+      setProjects(projectsData);
     } catch (err) {
       console.error('❌ CompanyPortfolioPage: Error loading portfolio:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load portfolio';
